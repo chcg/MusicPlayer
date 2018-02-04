@@ -1,4 +1,4 @@
-version: 1.0.{build}
+version: 1.0.0.3.{build}
 image: Visual Studio 2017
 
 
@@ -35,25 +35,25 @@ build_script:
     - msbuild MusicPlayer.sln /m /p:configuration="%configuration%" /p:platform="%platform_input%"  /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 after_build:
-    - cd "%APPVEYOR_BUILD_FOLDER%"\MusicPlayer
+    - cd "%APPVEYOR_BUILD_FOLDER%"
     - ps: >-
 
         if ($env:PLATFORM_INPUT -eq "x64" -and $env:CONFIGURATION -eq "Release") {
-            #Push-AppveyorArtifact "bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\MusicPlayer.dll" -FileName MusicPlayer.dll
+            #Push-AppveyorArtifact "MusicPlayer\bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\MusicPlayer.dll" -FileName MusicPlayer.dll
         }
 
         if ($env:PLATFORM_INPUT -eq "x86" -and $env:CONFIGURATION -eq "Release") {
-            #Push-AppveyorArtifact "bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\MusicPlayer.dll" -FileName MusicPlayer.dll
+            #Push-AppveyorArtifact "MusicPlayer\bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\MusicPlayer.dll" -FileName MusicPlayer.dll
         }
 
         if ($($env:APPVEYOR_REPO_TAG) -eq "true" -and $env:CONFIGURATION -eq "Release" -and $env:PLATFORMTOOLSET -eq "VS17") {
             if($env:PLATFORM_INPUT -eq "x64"){
               $ZipFileName = "MusicPlayer_$($env:APPVEYOR_REPO_TAG_NAME)_x64.zip"
-              7z a $ZipFileName bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\MusicPlayer.dll
+              7z a $ZipFileName "$($env:APPVEYOR_BUILD_FOLDER)\MusicPlayer\bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\MusicPlayer.dll"
             }
             if($env:PLATFORM_INPUT -eq "x86"){
               $ZipFileName = "MusicPlayer_$($env:APPVEYOR_REPO_TAG_NAME)_x86.zip"
-              7z a $ZipFileName bin\$env:CONFIGURATION\MusicPlayer.dll
+              7z a $ZipFileName "$($env:APPVEYOR_BUILD_FOLDER)\MusicPlayer\bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\MusicPlayer.dll"
             }
         }
 
@@ -64,7 +64,7 @@ artifacts:
 deploy:
     provider: GitHub
     auth_token:
-        secure: !!TODO, see https://www.appveyor.com/docs/deployment/github/#provider-settings!!
+        secure: PhNXrhw03Z0rJZssX/UYyoIofw669wU1GBy/hGq+WJPCXd7mbxDu6Il32Rx0LBH6
     artifact: releases
     draft: false
     prerelease: false
